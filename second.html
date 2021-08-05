@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>  
+<title>
+  CS 416 Narrative Visualization: Michael Koziana
+</title>
+</head>
+
+<body>
+  <div class="header" style="background-color: MediumTurquoise; color: white" aligncenter>
+    <h1>What is Economic Growth?</h1>
+  </div>
+   <p style="padding-left : 2%">GDP = C + I + G + (X-M)</p>
+   <p style="padding-left : 2%">GDP is the productive potential of domestic production, and it encompasses consumption denoted by C, Business Investments denoted by I, Government Spending denoted by G, and Net Exports denoted by (X-M)</p>
+   <p style="padding-left : 2%">Economic growth is an increase in the productive potential of an economy in comparison to a previous period of time - an increase in GDP from year on year, economic decline being represented by a decrease in GDP year on year. As we can see in the first chart, the US economy had a 20.932 Trillion $ economy in the year 2020. </p>
+   <p style="padding-left : 2%">One could say from this given graph that the US GDP has increased 10x or more than 1000% economic growth in the last 60 years from 1960 to 2020</p>
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<div id ="chart1"></div>
+
+<script>
+
+var margin = {top: 10, right: 30, bottom: 30, left: 60},
+    width = 700 - margin.left - margin.right,
+    height = 700 - margin.top - margin.bottom;
+
+var svg = d3.select("#chart1")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+d3.csv("america.csv", function(d){
+    return {date : d3.timeParse("%Y")(d.date), value : d.value}}, function(data) {
+
+  var x = d3.scaleTime()
+    .domain(d3.extent(data, function(d) {return d.date;}))
+    .range([0, width]);
+  svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x));
+
+  var y = d3.scaleLinear()
+    .domain([550, d3.max(data, function(d) { return +d.value;})])
+    .range([ height, 0 ]);
+  svg.append("g")
+    .call(d3.axisLeft(y));
+
+   svg.append("path")
+      .datum(data)
+      .attr("id","america_line")
+      .attr("fill", "none")
+      .attr("stroke", "green")
+      .attr("stroke-width", 2.5)
+      .attr("d", d3.line()
+        .x(function(d) { return x(d.date) })
+        .y(function(d) { return y(d.value) })
+        )
+    svg.append("text")
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+     .style("color", "#333333")
+     .attr("transform", "translate("+ (width/3 + 150) + "," +(height/60) + ")")
+      .text("GDP(billions of dollars) for given year")
+      .style("font-family", "Arial");
+  
+    svg.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("x", width)
+    .attr("y", height - 6)
+    .text("Years");
+    
+    svg.append("text")
+    .attr("class", "y label")
+    .attr("text-anchor", "end")
+    .attr("y", 6)
+    .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .text("GDP (billions of dollars)");
+  
+  
+    var focus = svg.append("g") 
+    .style("display", "none");
+  
+     focus.append("circle")
+        .attr("class", "y")
+        .style("fill", "none")
+        .style("stroke", "blue")
+        .attr("r", 4);
+    
+    svg.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .style("fill", "none")
+        .style("pointer-events", "all")
+        .on("mouseover", function() { focus.style("display", null); })
+        .on("mouseout", function() { focus.style("display", "none"); })
+        .on("mousemove", mousemove);
+
+    function mousemove() {
+		var x0 = x.invert(d3.mouse(this)[0]),
+		    i = bisectDate(data, x0, 1),
+		    d0 = data[i - 1],
+		    d1 = data[i],
+		    d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+
+		focus.select("circle.y")
+		    .attr("transform",
+		          "translate(" + x(d.date) + "," +
+		                         y(d.value) + ")");
+	}
+
+})
+
+</script>
+  <p style="padding-left : 2%">Now that we know what economic growth is continue to find out more!</p>	
+  <p style="padding-left : 2%">Our goal is to see if the covid pandemic has an impact on the economic growth of countries - both large and small as well as both rich and poor. The fundamental question: How does covid impact economic growth?</p>
+  <p style="padding-left : 2%"><a href="third.html">Continue the Narrative Journey to learn more!</a></p>
+   <p style="padding-left : 2%"><a href="index.html">Restart the Narrative Journey!</a></p>
+</body>

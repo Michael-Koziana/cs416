@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<body>
+  <div class="header" style="background-color: MediumTurquoise; color: white" aligncenter>
+    <h1 style = "padding:2%">What is the best prevention method for covid?</h1>
+</div>
+<p> The best solution to covid is a vaccinated population with immunity against the disease! Thus, the likely outcome is that countries with more vaccinations have higher economic growth rates!</p>
+<p> Is that necessarily true?</p>
+<p> Hover over the data points in the scatterplot to inspect the data further to find out!</p>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<div id="chart"></div>
+
+<script>
+
+var margin = {top: 10, right: 30, bottom: 30, left: 60},
+    width = 460 - margin.left - margin.right,
+    height = 450 - margin.top - margin.bottom;
+
+var svg = d3.select("#chart")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+
+d3.csv("2021.csv", function(data) {
+    console.log(data)
+  var x = d3.scaleLinear()
+    .domain([0, 0])
+    .range([ 0, width ]);
+  svg.append("g")
+    .attr("class", "myXaxis")   
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x))
+    .attr("opacity", "0")
+
+  var y = d3.scaleLinear()
+    .domain([0, 100])
+    .range([ height, 0]);
+  svg.append("g")
+    .call(d3.axisLeft(y));
+
+  var tooltip = d3.select("#chart")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "1px")
+    .style("border-radius", "5px")
+    .style("padding", "10px")
+  
+  
+  var mouseover = function(d) {
+    tooltip
+      .style("opacity", 1)
+  }
+
+  var mousemove = function(d) {
+    tooltip
+      .html(d.country + ': economic_growth = ' + d.growth_rate + ' vaccination_rate = ' + d.people_fully_vaccinated_per_hundred)
+      .style("left", (d3.mouse(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+      .style("top", (d3.mouse(this)[1]) + "px")
+  }
+
+  var mouseleave = function(d) {
+    tooltip
+      .transition()
+      .duration(200)
+      .style("opacity", 0)
+  }
+  console.log(data[0].year);
+  svg.append('g')
+    .selectAll("dot")
+    .data(data) 
+    .enter()
+    .append("circle")
+      .attr("cx", function (d) { return x(d.growth_rate);})
+      .attr("cy", function (d) { return y(d.people_fully_vaccinated_per_hundred);})
+      .attr("r", 7)
+      .style("fill", "#993399")
+      .style("opacity", 0.3)
+      .style("stroke", "white")
+    .on("mouseover", mouseover )
+    .on("mousemove", mousemove )
+    .on("mouseleave", mouseleave )
+    
+    x.domain([0, 10])
+  svg.select(".myXaxis")
+    .transition()
+    .duration(2000)
+    .attr("opacity", "1")
+    .call(d3.axisBottom(x));
+
+  svg.selectAll("circle")
+    .transition()
+    .delay(function(d,i){return(i*7)})
+    .duration(2000)
+    .attr("cx", function (d) { return x(d.growth_rate); } )
+    .attr("cy", function (d) { return y(d.people_fully_vaccinated_per_hundred); } )
+    
+    svg.append("text")
+    .attr("text-anchor", "middle")
+    .style("font-size", "14px")
+     .style("color", "#339933")
+     .attr("transform", "translate("+ (width/3 + 75) + "," +(height/60) + ")")
+      .text("Fully Vaccinated Rate(per 100) v. Economic Growth(%)")
+      .style("font-family", "Arial");
+  
+
+})
+
+</script>
+<br/><h3>Conclusion:</h3><br/>
+  <p> While Covid death rates per 100,000 proved to be a reliable way to predict whether a country would have economic growth/decline in 2020, 2021 remains a lot more uncertain than the year 2020</p>
+  <p> Even countries with lower vaccination rates seem to be recovering well - economically - from the pandemic, even those that have low case loads currently - that'll lead to higher case loads! </p>
+  <p> Hope you enjoyed the journey! </p>
+  <p><a href="index.html">Restart the Narrative Journey!</a></p>
+</body>
